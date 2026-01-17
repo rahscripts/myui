@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type M = [
    { sub: string,
@@ -12,6 +12,7 @@ const Input = () => {
 
     const [sub, setSub] = useState("");
     const [amount, setAmount] = useState("");
+    const [rsmonth, setRsmonth] = useState(0);
 
     const [mobject, setMobject]= useState<M>([]);
 
@@ -23,7 +24,15 @@ const Input = () => {
          "bg-indigo-200",
         
     ]
-
+    useEffect(() => {
+        let total = 0;
+        mobject.forEach((i) => (
+            total+=Number(i.amount)
+       
+    ))
+        setRsmonth(total)
+    }, [mobject]);
+    
     const handleAdd = () => {
 
         if (amount === "") return ;
@@ -49,7 +58,7 @@ const Input = () => {
            <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
            <button className="btn w-fit" onClick={handleAdd}>add</button>
         </div>
-        <div className="flex gap-2">
+        <div className="flex my-5 gap-2">
             {mobject.map((m) => (
                 <div key={m.id} className={`${colorOn[m.color]} flex flex-col items-center justify-center w-fit p-5 rounded-xl `}>
                     <div className="font-bold uppercase text-3xl">{m.sub}</div>
@@ -57,6 +66,10 @@ const Input = () => {
                     <div>{12 * Number(m.amount)}rs/year</div>
                 </div>
             ))}
+        </div>
+        <div>
+            Total:
+            {rsmonth} rs/month. {rsmonth*12} rs/year.
         </div>
     </section>
   )
