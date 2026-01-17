@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AmountCard from "./AmountCard";
 
 type M = {
     sub: string,
@@ -78,36 +79,14 @@ const Input = () => {
                 <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
                 <button className="btn w-fit" type="submit">add</button>
             </form>
-            <div className="bg-red-400 p-5 rounded-2xl my-5 font-bold text-3xl">
+            <div className="bg-red-300 p-5 rounded-2xl my-5 font-bold text-2xl">
                 Total: 
                 {rsmonth}rs/month. {rsmonth * 12}rs/year.
             </div>
             <div className="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Map through mobject array and render AmountCard component for each item */}
                 {mobject.map((m) => (
-                    <div
-                        key={m.id}
-                        className={`${colorOn[m.color]} rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all duration-300`}
-                    >
-                        <div className="space-y-3">
-                            <h3 className="uppercase font-bold text-red text-sm tracking-widest opacity-80">
-                                {m.sub}
-                            </h3>
-                            <button className="btn" onClick={() => handleDelete(m.id)}>delete</button>
-
-                            <div className="flex items-end gap-1">
-                                <span className="text-4xl font-bold">
-                                    ₹{m.amount}
-                                </span>
-                                <span className="text-sm opacity-80 mb-1">
-                                    /month
-                                </span>
-                            </div>
-
-                            <p className="text-sm opacity-70">
-                                ₹{12 * Number(m.amount)} billed yearly
-                            </p>
-                        </div>
-                    </div>
+                    <AmountCard key={m.id} m={m} handleDelete={handleDelete}/>
                 ))}
             </div>
 
