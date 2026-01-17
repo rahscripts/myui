@@ -65,6 +65,10 @@ const Input = () => {
         setAmount("");
     }
 
+    const handleDelete = (id: string) => {
+        setMobject(mobject.filter(t => t.id !== id ));
+    }
+
     console.log(mobject);
 
     return (
@@ -88,6 +92,7 @@ const Input = () => {
                             <h3 className="uppercase font-bold text-red text-sm tracking-widest opacity-80">
                                 {m.sub}
                             </h3>
+                            <button className="btn" onClick={() => handleDelete(m.id)}>delete</button>
 
                             <div className="flex items-end gap-1">
                                 <span className="text-4xl font-bold">
