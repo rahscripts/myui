@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-type M = [
-   { sub: string,
+type M = {
+    sub: string,
     amount: string,
-    color: number,}
-]
+    color: number,
+    id: string,
+}[]
 
 const Input = () => {
 
@@ -14,33 +15,48 @@ const Input = () => {
     const [amount, setAmount] = useState("");
     const [rsmonth, setRsmonth] = useState(0);
 
-    const [mobject, setMobject]= useState<M>([]);
+    const [mobject, setMobject] = useState<M>([]);
+
+    useEffect(() => {
+        const savedData = localStorage.getItem("mobject");
+        if (savedData) {
+            try {
+                setMobject(JSON.parse(savedData));
+            } catch (error) {
+                console.error("Failed to parse localStorage data:", error);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("mobject", JSON.stringify(mobject));
+    }, [mobject]);
 
     const colorOn = [
         "bg-green-200",
-       "bg-red-200",
-         "bg-blue-200",
-       "bg-purple-200",
-         "bg-indigo-200",
-        
+        "bg-red-200",
+        "bg-blue-200",
+        "bg-purple-200",
+        "bg-indigo-200",
     ]
+
     useEffect(() => {
         let total = 0;
         mobject.forEach((i) => (
-            total+=Number(i.amount)
-       
-    ))
+            total += Number(i.amount)
+
+        ))
         setRsmonth(total)
     }, [mobject]);
-    
+
     const handleAdd = () => {
 
-        if (amount === "") return ;
-        if (sub === "") return ;
+        if (amount === "") return;
+        if (sub === "") return;
         const newOn = {
-            sub, 
-            amount, 
-            color: Math.floor(Math.random() * 4) + 1, 
+            sub,
+            amount,
+            color: Math.floor(Math.random() * 4) + 1,
             id: crypto.randomUUID(),
         }
 
@@ -51,28 +67,51 @@ const Input = () => {
 
     console.log(mobject);
 
-  return (
-    <section>
-        <div className="flex flex-col gap-3">
-           <input value={sub} onChange={(e) => setSub(e.target.value)} type="text" placeholder="subscription name" className="input" />
-           <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
-           <button className="btn w-fit" onClick={handleAdd}>add</button>
-        </div>
-        <div className="flex my-5 gap-2">
-            {mobject.map((m) => (
-                <div key={m.id} className={`${colorOn[m.color]} flex flex-col items-center justify-center w-fit p-5 rounded-xl `}>
-                    <div className="font-bold uppercase text-3xl">{m.sub}</div>
-                    <div className="opacity-90">{m.amount}rs/month</div>
-                    <div>{12 * Number(m.amount)}rs/year</div>
-                </div>
-            ))}
-        </div>
-        <div>
-            Total:
-            {rsmonth} rs/month. {rsmonth*12} rs/year.
-        </div>
-    </section>
-  )
+    return (
+        <section>
+            <form onSubmit={handleAdd} className="flex flex-col gap-3 items-center justify-center">
+                <input required value={sub} onChange={(e) => setSub(e.target.value)} type="text" placeholder="subscription name" className="input" />
+                <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
+                <button className="btn w-fit" type="submit">add</button>
+            </form>
+            <div className="bg-red-400 p-5 rounded-2xl my-5 font-bold text-3xl">
+                Total: 
+                {rsmonth}rs/month. {rsmonth * 12}rs/year.
+            </div>
+            <div className="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {mobject.map((m) => (
+                    <div
+                        key={m.id}
+                        className={`${colorOn[m.color]} rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all duration-300`}
+                    >
+                        <div className="space-y-3">
+                            <h3 className="uppercase font-bold text-red text-sm tracking-widest opacity-80">
+                                {m.sub}
+                            </h3>
+
+                            <div className="flex items-end gap-1">
+                                <span className="text-4xl font-bold">
+                                    ₹{m.amount}
+                                </span>
+                                <span className="text-sm opacity-80 mb-1">
+                                    /month
+                                </span>
+                            </div>
+
+                            <p className="text-sm opacity-70">
+                                ₹{12 * Number(m.amount)} billed yearly
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div>
+                Total:
+                {rsmonth} rs/month. {rsmonth * 12} rs/year.
+            </div>
+        </section>
+    )
 }
 
 export default Input
