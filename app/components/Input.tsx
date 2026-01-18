@@ -8,6 +8,7 @@ type M = {
     amount: string,
     color: number,
     id: string,
+    category: string,
 }[]
 
 const Input = () => {
@@ -17,6 +18,7 @@ const Input = () => {
     const [rsmonth, setRsmonth] = useState(0);
 
     const [mobject, setMobject] = useState<M>([]);
+    const [cat, setCat] = useState("personal");
 
     useEffect(() => {
         const savedData = localStorage.getItem("mobject");
@@ -59,6 +61,7 @@ const Input = () => {
             amount,
             color: Math.floor(Math.random() * 4) + 1,
             id: crypto.randomUUID(),
+            category: cat,
         }
 
         setMobject(prev => [...prev, newOn])
@@ -67,7 +70,7 @@ const Input = () => {
     }
 
     const handleDelete = (id: string) => {
-        setMobject(mobject.filter(t => t.id !== id ));
+        setMobject(mobject.filter(t => t.id !== id));
     }
 
     console.log(mobject);
@@ -77,16 +80,23 @@ const Input = () => {
             <form onSubmit={handleAdd} className="flex flex-col gap-3 items-center justify-center">
                 <input required value={sub} onChange={(e) => setSub(e.target.value)} type="text" placeholder="subscription name" className="input" />
                 <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
+
+                <select value={cat} onChange={(e) => setCat(e.target.value)} className="select select-neutral">
+                    <option value="personal">personal</option>
+                    <option value="subscription">subscription</option>
+                    <option value="ott">ott</option>
+                </select>
+
                 <button className="btn w-fit" type="submit">add</button>
             </form>
             <div className="bg-red-300 p-5 rounded-2xl my-5 font-bold text-2xl">
-                Total: 
+                Total:
                 {rsmonth}rs/month. {rsmonth * 12}rs/year.
             </div>
             <div className="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Map through mobject array and render AmountCard component for each item */}
                 {mobject.map((m) => (
-                    <AmountCard key={m.id} m={m} handleDelete={handleDelete}/>
+                    <AmountCard key={m.id} m={m} handleDelete={handleDelete} />
                 ))}
             </div>
 

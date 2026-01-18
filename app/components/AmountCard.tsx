@@ -6,6 +6,7 @@ type CardItem = {
     amount: string,
     color: number,
     id: string,
+    category: string;
 };
 
 // Define the component props interface - the component receives ONE card item and a delete handler
@@ -37,7 +38,7 @@ const AmountCard = ({m, handleDelete}: AmountCardProps) => {
             <div className="space-y-3">
                 <div className='flex items-center justify-between'>
                     <h3 className="uppercase font-bold text-red text-sm tracking-widest opacity-80">
-                        {m.sub}
+                        {m.sub}({m.category})
                     </h3>
                     <button className="cursor-pointer duration-200 hover:bg-red-300 p-1 rounded-md" onClick={() => handleDelete(m.id)}>{deleteIcon}</button>
                 </div>
