@@ -6,7 +6,8 @@ type CardItem = {
     amount: string,
     color: number,
     id: string,
-    category: string;
+    category: string,
+    subscription: boolean,
 };
 
 // Define the component props interface - the component receives ONE card item and a delete handler
@@ -33,7 +34,7 @@ const AmountCard = ({m, handleDelete}: AmountCardProps) => {
     return (
         <div
             key={m.id}
-            className={`${colorOn[m.color]} rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all duration-300`}
+            className={`${colorOn[m.color]} ${m.subscription && "bg-red-500 animate-bounce"} rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all duration-300`}
         >
             <div className="space-y-3">
                 <div className='flex items-center justify-between'>

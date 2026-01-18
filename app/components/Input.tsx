@@ -9,6 +9,7 @@ type M = {
     color: number,
     id: string,
     category: string,
+    subscription: boolean,
 }[]
 
 const Input = () => {
@@ -16,9 +17,10 @@ const Input = () => {
     const [sub, setSub] = useState("");
     const [amount, setAmount] = useState("");
     const [rsmonth, setRsmonth] = useState(0);
-
+    //object
     const [mobject, setMobject] = useState<M>([]);
     const [cat, setCat] = useState("personal");
+    const [subscription, setSubscription] = useState(false);
 
     useEffect(() => {
         const savedData = localStorage.getItem("mobject");
@@ -62,6 +64,7 @@ const Input = () => {
             color: Math.floor(Math.random() * 4) + 1,
             id: crypto.randomUUID(),
             category: cat,
+            subscription: subscription,
         }
 
         setMobject(prev => [...prev, newOn])
@@ -78,16 +81,40 @@ const Input = () => {
     return (
         <section>
             <form onSubmit={handleAdd} className="flex flex-col gap-3 items-center justify-center">
-                <input required value={sub} onChange={(e) => setSub(e.target.value)} type="text" placeholder="subscription name" className="input" />
-                <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="amount" className="input input-primary" />
+                <input 
+                required 
+                value={sub} 
+                onChange={(e) => setSub(e.target.value)} 
+                type="text" 
+                placeholder="subscription name" 
+                className="input" />
 
-                <select value={cat} onChange={(e) => setCat(e.target.value)} className="select select-neutral">
+
+                <input 
+                value={amount} 
+                onChange={(e) => setAmount(e.target.value)} 
+                type="number" 
+                placeholder="amount" 
+                className="input input-primary" />
+
+                <select 
+                value={cat} 
+                onChange={(e) => setCat(e.target.value)} 
+                className="select select-neutral">
                     <option value="personal">personal</option>
-                    <option value="subscription">subscription</option>
+                    <option value="subscription">health</option>
                     <option value="ott">ott</option>
                 </select>
 
-                <button className="btn w-fit" type="submit">add</button>
+                <div className="flex items-center gap-3">
+                    <input 
+                    type="checkbox" 
+                    className="checkbox" 
+                    checked={subscription} 
+                    onChange={(e) => setSubscription(e.target.checked)} />
+                    
+                    <button className="btn w-fit" type="submit">add</button>
+                    </div>
             </form>
             <div className="bg-red-300 p-5 rounded-2xl my-5 font-bold text-2xl">
                 Total:
