@@ -2,137 +2,133 @@
 
 import { useEffect, useState } from "react";
 import AmountCard from "./AmountCard";
+import SubscriptionCard from "./subscriptionCard";
 
-type M = {
-    sub: string,
-    amount: string,
-    color: number,
-    id: string,
-    category: string,
-    subscription: boolean,
-}[]
+// Define data structure
+type Item = { sub: string; amount: string; color: number; id: string; category: string; subscription: boolean }[];
 
 const Input = () => {
-
+    // State management
     const [sub, setSub] = useState("");
     const [amount, setAmount] = useState("");
     const [rsmonth, setRsmonth] = useState(0);
-    //object
-    const [mobject, setMobject] = useState<M>([]);
+    const [items, setItems] = useState<Item>([]);
     const [cat, setCat] = useState("personal");
-    const [subscription, setSubscription] = useState(false);
+    const [isSubscription, setIsSubscription] = useState(false);
 
+    // Load from localStorage on mount
     useEffect(() => {
-        const savedData = localStorage.getItem("mobject");
-        if (savedData) {
+        const saved = localStorage.getItem("mobject");
+        if (saved) {
             try {
-                setMobject(JSON.parse(savedData));
-            } catch (error) {
-                console.error("Failed to parse localStorage data:", error);
+                setItems(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse data:", e);
             }
         }
     }, []);
 
+    // Save to localStorage whenever items change
     useEffect(() => {
-        localStorage.setItem("mobject", JSON.stringify(mobject));
-    }, [mobject]);
+        localStorage.setItem("mobject", JSON.stringify(items));
+    }, [items]);
 
-    const colorOn = [
-        "bg-green-200",
-        "bg-red-200",
-        "bg-blue-200",
-        "bg-purple-200",
-        "bg-indigo-200",
-    ]
-
+    // Calculate total monthly expense
     useEffect(() => {
-        let total = 0;
-        mobject.forEach((i) => (
-            total += Number(i.amount)
+        const total = items.reduce((sum, item) => sum + Number(item.amount), 0);
+        setRsmonth(total);
+    }, [items]);
 
-        ))
-        setRsmonth(total)
-    }, [mobject]);
-
-    const handleAdd = () => {
-
-        if (amount === "") return;
-        if (sub === "") return;
-        const newOn = {
-            sub,
-            amount,
-            color: Math.floor(Math.random() * 4) + 1,
-            id: crypto.randomUUID(),
-            category: cat,
-            subscription: subscription,
-        }
-
-        setMobject(prev => [...prev, newOn])
+    // Add new item
+    const handleAdd = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!amount || !sub) return;
+        
+        setItems((prev) => [
+            ...prev,
+            { sub, amount, color: Math.floor(Math.random() * 5), id: crypto.randomUUID(), category: cat, subscription: isSubscription }
+        ]);
         setSub("");
         setAmount("");
-    }
+    };
 
-    const handleDelete = (id: string) => {
-        setMobject(mobject.filter(t => t.id !== id));
-    }
-
-    console.log(mobject);
+    // Delete item
+    const handleDelete = (id: string) => setItems((prev) => prev.filter((item) => item.id !== id));
 
     return (
-        <section>
-            <form onSubmit={handleAdd} className="flex flex-col gap-3 items-center justify-center">
-                <input 
-                required 
-                value={sub} 
-                onChange={(e) => setSub(e.target.value)} 
-                type="text" 
-                placeholder="subscription name" 
-                className="input" />
-
-
-                <input 
-                value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
-                type="number" 
-                placeholder="amount" 
-                className="input input-primary" />
-
-                <select 
-                value={cat} 
-                onChange={(e) => setCat(e.target.value)} 
-                className="select select-neutral">
-                    <option value="personal">personal</option>
-                    <option value="subscription">health</option>
-                    <option value="ott">ott</option>
-                </select>
-
-                <div className="flex items-center gap-3">
-                    <input 
-                    type="checkbox" 
-                    className="checkbox" 
-                    checked={subscription} 
-                    onChange={(e) => setSubscription(e.target.checked)} />
-                    
-                    <button className="btn w-fit" type="submit">add</button>
-                    </div>
+        <section className="max-w-7xl mx-auto p-4">
+            {/* Input Form */}
+            <form onSubmit={handleAdd} className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+                    <input
+                        required
+                        value={sub}
+                        onChange={(e) => setSub(e.target.value)}
+                        type="text"
+                        placeholder="Name"
+                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                    />
+                    <input
+                        required
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        type="number"
+                        placeholder="Amount"
+                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                    />
+                    <select
+                        value={cat}
+                        onChange={(e) => setCat(e.target.value)}
+                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="personal">Personal</option>
+                        <option value="health">Health</option>
+                        <option value="ott">OTT</option>
+                    </select>
+                    <label className="flex items-center gap-2 text-sm">
+                        <input
+                            type="checkbox"
+                            checked={isSubscription}
+                            onChange={(e) => setIsSubscription(e.target.checked)}
+                            className="w-4 h-4"
+                        />
+                        Subscription
+                    </label>
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white rounded px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
+                    >
+                        Add
+                    </button>
+                </div>
             </form>
-            <div className="bg-red-300 p-5 rounded-2xl my-5 font-bold text-2xl">
-                Total:
-                {rsmonth}rs/month. {rsmonth * 12}rs/year.
-            </div>
-            <div className="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Map through mobject array and render AmountCard component for each item */}
-                {mobject.map((m) => (
-                    <AmountCard key={m.id} m={m} handleDelete={handleDelete} />
-                ))}
+
+            {/* Total Summary */}
+            <div className="bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg p-4 mb-6 text-center">
+                <p className="text-gray-700">
+                    <span className="font-bold text-lg">₹{rsmonth}</span>/month •
+                    <span className="font-bold text-lg ml-2">₹{rsmonth * 12}</span>/year
+                </p>
             </div>
 
+            {/* Items Grid */}
             <div>
-                Total:
-                {rsmonth} rs/month. {rsmonth * 12} rs/year.
+                <h2 className="text-sm font-semibold text-gray-600 mb-3">Regular Items</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {items.map((item) => (
+                        <AmountCard key={item.id} m={item} handleDelete={handleDelete} />
+                    ))}
+                </div>
+
+                <h2 className="text-sm font-semibold text-gray-600 mb-3">Subscriptions</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {items.map((item) => (
+                        <SubscriptionCard key={item.id} m={item} handleDelete={handleDelete} />
+                    ))}
+                </div>
             </div>
         </section>
-    )
-}
+    );
+};
 
-export default Input
+export default Input;

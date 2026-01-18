@@ -1,10 +1,10 @@
 type CardItem = { sub: string; amount: string; color: number; id: string; category: string; subscription: boolean };
 type CardProps = { m: CardItem; handleDelete: (id: string) => void };
 
-// Regular items (non-subscriptions) with dashed border
-const AmountCard = ({ m, handleDelete }: CardProps) =>
-  m.subscription ? null : (
-    <div className="border-2 border-dashed border-gray-300 bg-white rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-all">
+// Only render subscriptions with dashed premium border
+const SubscriptionCard = ({ m, handleDelete }: CardProps) => 
+  !m.subscription ? null : (
+    <div className="border-2 border-dashed border-gray-400 bg-white rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all">
       {/* Header with name and delete button */}
       <div className="flex justify-between items-start mb-3">
         <div>
@@ -31,4 +31,4 @@ const AmountCard = ({ m, handleDelete }: CardProps) =>
     </div>
   );
 
-export default AmountCard;
+export default SubscriptionCard;
